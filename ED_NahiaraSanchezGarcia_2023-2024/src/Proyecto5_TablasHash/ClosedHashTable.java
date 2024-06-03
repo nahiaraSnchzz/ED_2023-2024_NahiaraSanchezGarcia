@@ -63,7 +63,7 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 			int intentos=0;
 			int pos= funcionDispersion(elem,intentos);
 		
-			while(tabla[pos].getStatus()!=HashNode.VACIO ) {
+			while(tabla[pos].getStatus()==HashNode.LLENO ) {
 					intentos++;
 					pos= funcionDispersion(elem,intentos);
 				}
@@ -103,7 +103,7 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 			return (clave+intentos* (R-clave%R)) % getSize();
 			
 		}
-		return -1;
+		return 0;
 		
 	}
 	
