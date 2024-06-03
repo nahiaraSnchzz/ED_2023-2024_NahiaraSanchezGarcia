@@ -114,7 +114,21 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 	 */
 	@Override
 	public T find(T elem) {
-		// TODO Auto-generated method stub
+		if (elem == null) throw new NullPointerException();
+		
+		int intentos = 0;
+		int pos = funcionDispersion(elem, intentos);
+		
+		// Mientras esté lleno o borrado, busca
+		while (tabla[pos].getStatus() != HashNode.VACIO && intentos < getSize()) {
+			if (tabla[pos].getInfo() == elem) {
+				return tabla[pos].getInfo();
+			}
+			// calcula la siguiente posicion
+			intentos++;
+			pos = funcionDispersion(elem, intentos);
+		}
+		// si no lo encuentra
 		return null;
 	}
 
@@ -126,7 +140,29 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 	 */
 	@Override
 	public boolean remove(T elem) {
-		// TODO Auto-generated method stub
+		if (elem == null) throw new NullPointerException();
+		// si no se encuentra el elemento en la tabla
+		if (find(elem) == null) return false;
+		
+		int intentos = 0;
+		int pos = funcionDispersion(elem, intentos);
+		
+		// mientras esté lleno
+		while (tabla[pos].getStatus() != HashNode.VACIO && intentos < getSize()) {
+			if (tabla[pos].getStatus() == HashNode.LLENO) {
+				if (tabla[pos].getInfo() == elem) {
+					// lo marca como borrado
+					tabla[pos].setStatus(HashNode.BORRADO);
+					numElems--;
+					return true;
+				}
+				
+			}
+			intentos++;
+			pos = funcionDispersion(elem, intentos);
+			
+		}
+		// si no lo encuentra
 		return false;
 	}
 	

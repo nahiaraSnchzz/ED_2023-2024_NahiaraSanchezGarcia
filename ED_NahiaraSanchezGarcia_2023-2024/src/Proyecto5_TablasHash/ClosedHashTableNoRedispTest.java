@@ -5,7 +5,6 @@ import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
 
-
 public class ClosedHashTableNoRedispTest {
 
 	
@@ -36,8 +35,7 @@ public class ClosedHashTableNoRedispTest {
 		assertEquals(true, a.add(0));  // A�ado todos los elementos
 		assertEquals(true, a.add(1));
 		assertEquals(true, a.add(5));		
-		assertEquals(true, a.add(4));
-		assertEquals(true, a.add(9));
+		assertEquals(true, a.add(4)); assertEquals(true, a.add(9));
 		assertEquals("{0};{1};{5};{9};{4};[Size: 5 Num.Elems.: 5]", a.toString());
 		  
 		  
