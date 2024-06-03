@@ -76,36 +76,6 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 	}
 	
 	
-	/**
-	 * Encuentra la posición en la que irá el elemento a añadir.
-	 * 
-	 * @param info --> la clave a añadir.
-	 * @param intentos --> el número de intentos realizados para añadir un elemento.
-	 * @return
-	 */
-	protected int funcionDispersion(T info,int intentos) {
-		// asigna a la clave info una posición de la tabla hash
-		int clave = fHash(info);
-		
-		if(exploracion==LINEAL) {	
-			// f(x) = (h(x) + i) % B
-			return (clave+intentos) % getSize();
-		}
-		else if(exploracion==CUADRATICA) {
-			// f(x) = (h(x) + i^2) % B
-			return (clave+intentos * intentos) % getSize();
-		}
-		else if(exploracion==DOBLEHASH){
-			// f(x) = (h(x) + i * H2(x)) % B
-			// H2(x) = R - h(x) % R
-			// siendo R un número primo antecesor de B
-			int R=previousPrimeNumber(getSize());
-			return (clave+intentos* (R-clave%R)) % getSize();
-			
-		}
-		return 0;
-		
-	}
 	
 	/**
 	 * Busca un elemento en la tabla hash
@@ -165,6 +135,39 @@ public class ClosedHashTable <T> extends AbstractHash<T>{
 		// si no lo encuentra
 		return false;
 	}
+	
+	
+	/**
+	 * Encuentra la posición en la que irá el elemento a añadir.
+	 * 
+	 * @param info --> la clave a añadir.
+	 * @param intentos --> el número de intentos realizados para añadir un elemento.
+	 * @return
+	 */
+	protected int funcionDispersion(T info,int intentos) {
+		// asigna a la clave info una posición de la tabla hash
+		int clave = fHash(info);
+		
+		if(exploracion==LINEAL) {	
+			// f(x) = (h(x) + i) % B
+			return (clave+intentos) % getSize();
+		}
+		else if(exploracion==CUADRATICA) {
+			// f(x) = (h(x) + i^2) % B
+			return (clave+intentos * intentos) % getSize();
+		}
+		else if(exploracion==DOBLEHASH){
+			// f(x) = (h(x) + i * H2(x)) % B
+			// H2(x) = R - h(x) % R
+			// siendo R un número primo antecesor de B
+			int R=previousPrimeNumber(getSize());
+			return (clave+intentos* (R-clave%R)) % getSize();
+			
+		}
+		return 0;
+		
+	}
+
 	
 
 
