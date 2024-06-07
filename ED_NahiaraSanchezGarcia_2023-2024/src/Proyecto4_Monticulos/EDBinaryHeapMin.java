@@ -5,177 +5,232 @@ package Proyecto4_Monticulos;
  * @version 2023-24 distribuible
  */
  public class EDBinaryHeapMin<T extends Comparable<T>> implements EDPriorityQueue<T>{
-	protected T [] monticulo;
-	protected int numElementos;
+	
+	 
+		private T[] monticulo;
+		private int numElementos;
 
-	
-	@SuppressWarnings("unchecked")
-	public EDBinaryHeapMin(int numMaxElementos) {
-		monticulo = (T[]) new Comparable[numMaxElementos];
-		numMaxElementos = 0;
-	}
-	
-	/**
-	 * Se le pasa el elemento que se quiere insertar en la cola
-	 * Lanza NullPointerException si el elemento a insertar es null
-	 * devuelve true si consigue insertarlo, false en caso contrario
-	 */
-	@Override
-	public boolean add(T elemento) {
-		if (elemento == null) throw new NullPointerException();
-		if (numElementos == monticulo.length) return false;
-		monticulo[numElementos] = elemento;
-		filtradoAscendente(numElementos);
-		numElementos++;
-		return true;
-	}
-	
-	/** 
-	 * devuelve y elimina el elemento con mayor prioridad (cima del monticulo), o null si no hay elementos
-	 */
-	@Override
-	public T poll() {
-		if (isEmpty()) return null;
-		T primerElemento = monticulo[0];
-		monticulo[0] = monticulo[--numElementos];
-		filtradoDescendente(0);
-		return primerElemento;
-	}
+		@SuppressWarnings("unchecked")
+		public EDBinaryHeapMin(int tamano) {
 
-	@Override
-	public boolean remove(T elemento) {
-		if (elemento == null) throw new NullPointerException();
-		if (isEmpty()) return false;
-		int posicionEliminar = searchElement(elemento);
-		if (posicionEliminar == -1) return false;
-		T anterior = monticulo[posicionEliminar];
-		monticulo[posicionEliminar] = monticulo[--numElementos];
-		if (monticulo[posicionEliminar].compareTo(anterior) == 0) {
+			monticulo = (T[]) new Comparable[tamano];
+			this.numElementos = 0;
+		}
+
+		/**
+		 * Añade un elemento al final del monticulo y despues hace un filtrado
+		 * ascendente.
+		 */
+		@Override
+		public boolean add(T elemento) {
+			if (elemento == null)
+				throw new NullPointerException();
+			if (numElementos == monticulo.length)
+				return false;
+
+			monticulo[numElementos] = elemento;
+
+			filtradoAscendente(numElementos);
+			numElementos++;
 			return true;
 		}
-		if (monticulo[posicionEliminar].compareTo(anterior)<0) {
-			filtradoAscendente(posicionEliminar);
-		}
-		else if (monticulo[posicionEliminar].compareTo(anterior) > 0) {
-			filtradoDescendente(posicionEliminar);
-		}
-		return true;
-		
-	}
-	
-	public int searchElement (T elemento) {
-		for (int i=0; i < numElementos; i++) {
-			if (monticulo[i].compareTo(elemento) == 0) {
-				return i;
-			}
-		}
-		return -1;
-	}
-	
-	/**
-	 * Indica si no hay ningun elemento
-	 */
-	@Override
-	public boolean isEmpty() {
-		return numElementos == 0;
-	}
-	
-	/**
-	 * Elimina todos los elementos de la cola
-	 */
-	@Override
-	public void clear() {
-		numElementos = 0;
-	}
 
-	/**  
-	 * Devuelve una cadena con la informacion de los elementos que contiene el  
-	 * monticulo separados por tabuladores
-	*/
-	@Override
-	public String toString() {
-		String str = "";
-		for (int i=0; i < numElementos; i++) {
-			str += monticulo[i] + "\t";
-		}
-		// quita el tab del final
-		return str.strip();
-	
-	}
-
-	@Override
-	public boolean cambiarPrioridad(int pos, T elemento) {
-		if (elemento == null) throw new NullPointerException();
-		if (pos >= numElementos || pos < 0) return false;
-		if (isEmpty()) return false;
-		T anterior = monticulo[pos];
-		monticulo[pos] = elemento;
-		if (elemento.compareTo(anterior) ==0) return false;
-		else if (elemento.compareTo(anterior) < 0) filtradoAscendente(pos);
-		else if (elemento.compareTo(anterior) > 0) filtradoDescendente(pos);
-		return true;
-	}
-    
-
-    /**
-     * Realiza una filtrado ascendente de minimos en el monticulo
-     * 
-     * Se le pasa el indice del elemento a filtrar
-     */
-    protected void filtradoAscendente(int pos) {
-    	int padre = (pos-1)/2;
-		// es el padre menor que el hijo?
-		while (padre >= 0 && monticulo[pos].compareTo(monticulo[padre]) < 0) {
-			T aux = monticulo[padre];
-			monticulo[padre] = monticulo[pos];
-			monticulo[pos] = aux;
-			pos = padre;
-			// hay que actualizar la posicion del padre.
+		/**
+		 * Saca el primer elemento del monticulo. Coloca el ultimo elemento en la
+		 * primera posicion y realiza un filtrado descendente.
+		 */
+		@Override
+		public T poll() {
+			if (isEmpty()) return null;
+			T primerElem = monticulo[0];
 			
-			padre = (pos-1)/2;
-		}
-    }
+			monticulo[0] = monticulo[numElementos - 1];
+			numElementos--;
+			filtradoDescendente(0);
 
-    /**
-     * Realiza una filtrado descendente de minimos en el monticulo
-     * 
-     * Se le pasa el indice del elemento a filtrar
-     */
-    protected void filtradoDescendente(int pos) {
-    	int hijo = getMinHijo(pos);
-    	while (hijo != -1 && monticulo[pos].compareTo(monticulo[hijo]) > 0) {
-    		T aux = monticulo[hijo];
-    		monticulo[hijo] = monticulo[pos];
-    		monticulo[pos] = aux;
-    		pos = hijo;
-    		hijo = getMinHijo(pos);
-    	}
-    }
-	
-	/**
-	 * Metodo que calcula y devuelve la posicion del hijo menor del nodo pasado
-	 * como parametro.
-	 * 
-	 * @param pos  La posicion del nodo padre
-	 * @return  La posicion del menor de sus hijos o -1 si no existe ninguno
-	 */
-	public int getMinHijo(int pos) {
-		
-		int elementoHijoIzq = 2*pos+1;
-		int elementoHijoDcho = 2*pos+2;
-		if (elementoHijoIzq >= numElementos) return -1;
-		else if (elementoHijoDcho >= numElementos && elementoHijoIzq < numElementos) {
-			return elementoHijoIzq;
+			return primerElem;
+
 		}
-		else {
-			if (monticulo[elementoHijoIzq].compareTo(monticulo[elementoHijoDcho])<0) {
-				return elementoHijoIzq;
+
+		/**
+		 * Borra un elemento. Coloca el ultimo elemento del monticulo en la posicion del
+		 * elemento a borrar y hace un filtrado.
+		 */
+		@Override
+		public boolean remove(T elemento) {
+
+			if (elemento == null)
+				throw new NullPointerException();
+			if (numElementos == 0)
+				return false;
+
+			int posicionEliminar = searchElement(elemento);
+
+			if (posicionEliminar == -1)
+				return false;
+
+			T ultimoElem = monticulo[numElementos - 1];
+
+			monticulo[posicionEliminar] = ultimoElem;
+
+			monticulo[numElementos - 1] = null;
+
+			if (ultimoElem.compareTo(elemento) == 0) {
+				numElementos--;
+				return true;
 			}
+			else if (ultimoElem.compareTo(elemento) < 0)
+				filtradoAscendente(posicionEliminar);
+			else
+				filtradoDescendente(posicionEliminar);
+
+			numElementos--;
+			return true;
+		}
+
+		/**
+		 * Busca el elemento y devuelve su posicion en el monticulo. Si no existe
+		 * devuelve -1
+		 * 
+		 * @param elemento a buscar
+		 * @return
+		 */
+		public int searchElement(T elemento) {
+			for (int i = 0; i < numElementos; i++) {
+				if (monticulo[i].compareTo(elemento) == 0) {
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return numElementos == 0;
+		}
+
+		@Override
+		public void clear() {
+			numElementos = 0;
+		}
+
+		/**
+		 * Cambia un elemento del monticulo. Al hacer esto, hay que realizar un filtrado
+		 * ascendente o descendente.
+		 * 
+		 * Devuelve true si la prioridad cambia; false en caso contrario.
+		 */
+		@Override
+		public boolean cambiarPrioridad(int pos, T elemento) {
+			if (elemento == null)
+				throw new NullPointerException();
+			if (pos >= numElementos || pos < 0)
+				return false;
+			if (isEmpty())
+				return false;
+
+			T anterior = monticulo[pos];
+			monticulo[pos] = elemento;
+
+			if (anterior.compareTo(monticulo[pos]) == 0)
+				return false;
+			else if (anterior.compareTo(monticulo[pos]) > 0) {
+				filtradoAscendente(pos);
+			} else {
+				filtradoDescendente(pos);
+			}
+
+			return true;
+		}
+
+		/**
+		 * Realiza un filtrado ascendente. Si el hijo es menor que el padre, los
+		 * intercambia.
+		 * 
+		 * @param posicionActual
+		 */
+		public void filtradoAscendente(int posicionActual) {
+			int posicionPadre = (posicionActual - 1) / 2;
+			// mientras que el hijo sea menor que el padre
+			while (posicionPadre >= 0 && monticulo[posicionActual].compareTo(monticulo[posicionPadre]) < 0) {
+				T padre = monticulo[posicionPadre];
+				monticulo[posicionPadre] = monticulo[posicionActual];
+				monticulo[posicionActual] = padre;
+
+				posicionActual = posicionPadre;
+				posicionPadre = (posicionActual - 1) / 2;
+
+			}
+		}
+
+		/**
+		 * Realiza un filtrado descendente
+		 * 
+		 * @param posicionPadre
+		 */
+		public void filtradoDescendente(int posicionPadre) {
+			int posicionHijo = getMinHijo(posicionPadre);
+
+			while (posicionHijo != -1) {
+				if (monticulo[posicionPadre].compareTo(monticulo[posicionHijo]) > 0) {
+					// intercambia hijo y padre
+					T padre = monticulo[posicionPadre];
+					monticulo[posicionPadre] = monticulo[posicionHijo];
+					monticulo[posicionHijo] = padre;
+
+					posicionPadre = posicionHijo;
+					posicionHijo = getMinHijo(posicionPadre);
+				}
+				// si el hijo es mayor que el padre para de iterar
+				else {
+					break;
+				}
+
+			}
+
+		}
+
+		/**
+		 * Devuelve el menor de los hijos de la posicion padre. Devuelve -1 si no
+		 * existen los hijos
+		 * 
+		 * @param posicionPadre
+		 * @return
+		 */
+		private int getMinHijo(int posicionPadre) {
+			int posHijoIzq = 2 * posicionPadre + 1;
+			int posHijoDcho = 2 * posicionPadre + 2;
+
+			if (posHijoIzq >= numElementos)
+				return -1;
+			// si el derecho esta fuera del array y el izq esta dentro, devuelve el izq
+			else if (posHijoDcho >= numElementos && posHijoIzq < numElementos) {
+				return posHijoIzq;
+			}
+			// si los dos hijos existen
 			else {
-				return elementoHijoDcho;
+				if (monticulo[posHijoIzq].compareTo(monticulo[posHijoDcho]) < 0) {
+					return posHijoIzq;
+				} else {
+					return posHijoDcho;
+				}
 			}
 		}
 		
-	}
+		
+		/**  
+		 * Devuelve una cadena con la informacion de los elementos que contiene el  
+		 * monticulo separados por tabuladores
+		*/
+		@Override
+		public String toString() {
+			String str = "";
+			for (int i=0; i < numElementos; i++) {
+				str += monticulo[i] + "\t";
+			}
+			// quita el tab del final
+			return str.strip();
+		
+		}
 
 }
