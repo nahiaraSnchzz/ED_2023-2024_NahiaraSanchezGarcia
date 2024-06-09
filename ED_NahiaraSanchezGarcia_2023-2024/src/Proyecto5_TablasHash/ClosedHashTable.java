@@ -106,7 +106,7 @@ public class ClosedHashTable<T> extends AbstractHash<T> {
 		
 		// Mientras esté lleno o borrado, busca
 		while (tabla[pos].getStatus() != HashNode.VACIO && intentos < getSize()) {
-			if (tabla[pos].getInfo() == elem) {
+			if (tabla[pos].getInfo().equals(elem)) {
 				return tabla[pos].getInfo();
 			}
 			// calcula la siguiente posicion
@@ -135,7 +135,7 @@ public class ClosedHashTable<T> extends AbstractHash<T> {
 		// mientras esté lleno
 		while (tabla[pos].getStatus() != HashNode.VACIO && intentos < getSize()) {
 			if (tabla[pos].getStatus() == HashNode.LLENO) {
-				if (tabla[pos].getInfo() == elem) {
+				if (tabla[pos].getInfo().equals(elem)) {
 					// lo marca como borrado
 					tabla[pos].setStatus(HashNode.BORRADO);
 					numElems--;
